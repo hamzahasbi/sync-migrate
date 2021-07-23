@@ -1,8 +1,0 @@
-<keymap version="1" name="macOS copy" parent="Mac OS X 10.5+">
-  <action id="CommentByBlockComment">
-    <keyboard-shortcut first-keystroke="meta colon" />
-  </action>
-  <action id="CommentByLineComment">
-    <keyboard-shortcut first-keystroke="meta semicolon" />
-  </action>
-</keymap>
