@@ -8,7 +8,7 @@ task :install_packages do
       versions = line.split('(')[1].chomp.delete(' )').split(',')
     
       versions.each do | version |
-        cmd = "gem install #{name} --version=#{version}"
+        cmd = "sudo gem install #{name} --version=#{version}"
         puts cmd
         system cmd
       end  
