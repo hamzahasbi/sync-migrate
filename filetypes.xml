@@ -1,0 +1,7 @@
+<application>
+  <component name="FileTypeManager" version="18">
+    <extensionMap>
+      <mapping ext="install" type="PHP" />
+    </extensionMap>
+  </component>
+</application>
