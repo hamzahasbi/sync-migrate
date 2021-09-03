@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/Hamza/.oh-my-zsh"
+export ZSH="~/.oh-my-zsh"
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -13,7 +13,7 @@ POWERLEVEL9K_MODE='nerdfont-complete'
 # ZSH_THEME="rafiki"
 # ZSH_THEME="fino-time"
 ZSH_THEME="Ducula/ducula"
-ZSH_CUSTOM=/Users/Hamza/.oh-my-zsh/custom
+ZSH_CUSTOM=~/.oh-my-zsh/custom
 BULLETTRAIN_PROMPT_ORDER=(
   dir
   git
@@ -102,40 +102,3 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-autoload -U run-help
-autoload run-help-git
-autoload run-help-svn
-autoload run-help-svk
-alias help=run-help
-zstyle ':completion:*' rehash true
-plugins+=(zsh-completions)
-autoload -U compinit && compinit
-export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
-export PATH="$PATH:/Applications/Sublime Text.app/Contents/SharedSupport/bin"
-export PATH="$PATH:/Applications/Atom.app/Contents/MacOs/"
-export NVM_DIR="$HOME/.nvm"
-ssh-add ~/.ssh/id_rsa
-#fortune | cowsay -f 'tux'
-export PATH="$HOME/Documents/solr-8.1.0/bin:$PATH"
-export PATH="$HOME/.composer/vendor/bin:$PATH"
-export PATH="/usr/local/opt/ruby/bin:$PATH"
-export PATH="/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
-export LDFLAGS="-L/usr/local/opt/ruby/lib"
-export CPPFLAGS="-I/usr/local/opt/ruby/include"
-export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
-eval "$(rbenv init -)"
-export PHP_ID=php7_3
-export PATH="/usr/local/opt/openjdk/bin:$PATH"
-export PATH="/usr/local/Cellar/gcc/9.3.0/bin/:$PATH"
-export PATH="/usr/local/sbin:$PATH"
-export PATH="/usr/local/bin:$PATH"
-export PATH="/Applications/DevDesktop/php7_3_x64/bin:/Applications/DevDesktop/mysql/bin:/Applications/DevDesktop/tools:$PATH"
-# export PATH="/usr/local/opt/node@10/bin:$PATH"
-
-# ALIASES
-alias drush9='/Applications/DevDesktop/drush_9/drush'
-alias drush10='/Applications/DevDesktop/drush_10/drush'
-
-alias alert-sound="alerter -message 'Process Finished !' -sound default"
-export PATH="/usr/local/opt/python@3.9/bin:/usr/local/Cellar/node/15.3.0/bin:$PATH"
-alias reset-phpstorm="/Users/Hamza/Documents/jetbrains-reset-trial-mac-osx-master/runme.sh"
