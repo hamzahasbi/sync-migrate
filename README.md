@@ -43,9 +43,9 @@ Inside this folder you have a first script called backup-packages which (as its 
 
   
 
-chmod a+x ./scripts/backup-packages.sh
+	chmod a+x ./scripts/backup-packages.sh
 
-./backup-packages.sh
+	./backup-packages.sh
 
 After running the backup scripts you'll find several *.txt files in packages folder.
 
@@ -55,13 +55,13 @@ To do that you'll need to run 2 scripts one to reinstall brew packages and the o
 
   
 
-chmod a+x ./scripts/packages/brew-bulk-install.sh
+	chmod a+x ./scripts/packages/brew-bulk-install.sh
 
-chmod a+x ./scripts/packages/packages-reinstall.sh
+	chmod a+x ./scripts/packages/packages-reinstall.sh
 
-./brew-bulk-install.sh
+	./brew-bulk-install.sh
 
-./packages-reinstall.sh
+	./packages-reinstall.sh
 
 
 ## Dependencies  
