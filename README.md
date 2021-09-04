@@ -78,6 +78,6 @@ On the new machine you'll need the following tools to be installed.
 
 For composer packages a simpler solution would be to copy your composer.json in your home directory and directly do a composer install (much simpler i guess).
 
-## Faq
+## To contribute
 Feel free to submit issues or pull request or enhancement suggestions.
 [If you wanna have a chat](mailto:hamza.hasbi@gmail.com).
