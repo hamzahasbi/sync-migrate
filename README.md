@@ -1,7 +1,7 @@
 
   
 
-# sync-migrate
+# sync-migrate tool
 
   
 
