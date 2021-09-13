@@ -69,7 +69,7 @@ On the new machine you'll need the following tools to be installed.
 
 - [**Brew**](https://brew.sh/)
 - [**RubyGems**](https://rubygems.org/)
-- [**Yarn**](https://yarnpkg.com/)/[**NPM**](https://www.npmjs.com/)
+- [**Yarn**](https://yarnpkg.com/) / [**NPM**](https://www.npmjs.com/)
 - [**Composer**](https://getcomposer.org/)
 - [**ZSH**](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH) (optional)
 
