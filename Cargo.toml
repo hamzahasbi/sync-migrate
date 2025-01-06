@@ -1,0 +1,10 @@
+[package]
+name = "backup"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4.23"
+fs = "0.0.5"
+anyhow = "1.0"
+directories = "5.0"
