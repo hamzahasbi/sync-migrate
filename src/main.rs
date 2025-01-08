@@ -1,48 +1,96 @@
-use chrono::Local;
+use std::os::unix::fs::MetadataExt;
 use std::env;
 use std::fs; // Import env module
 use std::fs::OpenOptions;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::io::{self, Write, BufRead, BufReader};
+use std::io::{Write, BufRead, BufReader};
 use anyhow::{Context, Result};
-use directories::ProjectDirs;
+use fs_extra::dir::copy as copy_dir_all;
+use fs_extra::dir::CopyOptions;
+use directories::BaseDirs;
+mod mod_backup;
+use mod_backup::BackupConfig;
+fn check_ownership(path: &Path) -> bool {
+  let metadata = match fs::metadata(path) {
+      Ok(meta) => meta,
+      Err(e) => {
+          eprintln!("Unable to read metadata for '{}': {}", path.display(), e);
+          return false;
+      }
+  };
+  let owner_id = metadata.uid();
+  let current_user_id: u32 = unsafe { libc::getuid() };
+  owner_id == current_user_id
+}
 fn main() {
     // Get the current timestamp
     // let timestamp = Local::now().format("%Y-%m-%d_%H-%M-%S").to_string();
     let backup_dir = format!("./dotfiles"); // Specify your backup path
+    let current_dir = env::current_dir().expect("Failed to get current directory");
+    let backup_path = current_dir.join("dotfiles");
 
-    // Create the backup directory
-    fs::create_dir_all(&backup_dir).expect("Failed to create backup directory");
+    // Get config directory
+    let base_dirs = BaseDirs::new().expect("Failed to get base directories");
+    let config_dir = base_dirs.home_dir();
+    let config_path = config_dir.join("dotporter/backup_config.toml");
 
-    // Define the files and directories to back up
-    let files_to_backup = vec![
-        (format!("{}/.zshrc", env::var("HOME").unwrap()), ".zshrc"), // Use $HOME
-        (format!("{}/.config", env::var("HOME").unwrap()), ".config"), // Use $HOME
-    ];
-
-    // Copy each specified file/directory
-    for (source, name) in files_to_backup {
-        let destination = Path::new(&backup_dir).join(name);
-        if Path::new(&source).is_dir() {
-            copy_dir_all(&source, &destination).expect("Failed to copy directory");
-        } else {
-            fs::copy(&source, &destination).expect("Failed to copy file");
-        }
+    // Create config directory if it doesn't exist
+    if !config_dir.exists() {
+        fs::create_dir_all(config_dir.join("dotporter")).expect("Failed to create DotPorter directory");
     }
 
+    // Load or create config
+    let config = if config_path.exists() {
+        BackupConfig::load(config_path.to_str().unwrap()).unwrap()
+    } else {
+        // Create default config file
+        let _ = BackupConfig::create_default_config(config_path.to_str().unwrap());
+        BackupConfig::default_config()
+    };
+    // Create the backup directory
+    fs::create_dir_all(&backup_dir).expect("Failed to create backup directory");
+    let  ignore = config.omit_folders;
+    // Define the files and directories to back up
+    // let files_to_backup = vec![
+    //     (format!("{}/.zshrc", env::var("HOME").unwrap()), ".zshrc"), // Use $HOME
+    //     (format!("{}/.config", env::var("HOME").unwrap()), ".config"), // Use $HOME
+    // ];
+
+    // // Copy each specified file/directory
+    // for (source, name) in files_to_backup {
+    //     let destination = Path::new(&backup_dir).join(name);
+    //     if Path::new(&source).is_dir() {
+    //         copy_dir_all(&source, &destination).expect("Failed to copy directory");
+    //     } else {
+    //         fs::copy(&source, &destination).expect("Failed to copy file");
+    //     }
+    // }
+
+    let mut options = CopyOptions::new(); //Initialize default values for CopyOptions
+    options.overwrite = true; // To mirror copy the whole structure of the source directory
+    options.copy_inside = true; // To mirror copy the whole structure of the source directory
     // Copy all dotfiles and directories from the home directory
     let home_dir = env::var("HOME").unwrap(); // Use $HOME
     for entry in fs::read_dir(&home_dir).expect("Failed to read home directory") {
         let entry = entry.expect("Failed to get entry");
         let path = entry.path();
-        if path.file_name().unwrap().to_str().unwrap().starts_with('.') {
-            let destination = Path::new(&backup_dir).join(path.file_name().unwrap());
-            if path.is_dir() {
-                copy_dir_all(&path, &destination).expect("Failed to copy dot directory");
-            } else {
-                fs::copy(&path, &destination).expect("Failed to copy dot file");
-            }
+        let pathname = path.as_path();
+        let pathstr = path.file_name().unwrap().to_str().unwrap();
+        if pathstr.starts_with('.') && pathstr != "." && pathstr != ".." {
+          if ignore.contains(&pathstr.to_string()) || !check_ownership(&path) {
+            eprintln!("Error: Check permissions or the config file under ommit_folders '{}'.", path.display());
+            continue;
+          }
+          let destination: PathBuf = backup_path.join(path.file_name().unwrap());
+          let destination_name = backup_path.as_path();
+          println!("Backing up {} to {}", pathname.to_str().unwrap(), destination_name.to_str().unwrap());
+          // unsafe { exit(0) };
+          if path.is_dir() {
+              let _ = copy_dir_all(&pathname, &destination_name, &options);
+          } else if path.is_file() {
+              fs::copy(&path, &destination).expect("Failed to copy dot file");
+          }
         }
     }
 
@@ -77,21 +125,21 @@ fn create_file(base_dir: &Path, filename: &str) -> Result<fs::File> {
       .with_context(|| format!("Failed to create file: {:?}", file_path))
 }
 // Function to copy a directory recursively
-fn copy_dir_all<P: AsRef<Path>, Q: AsRef<Path>>(src: P, dst: Q) -> std::io::Result<()> {
-    fs::create_dir_all(&dst)?;
-    for entry in fs::read_dir(src)? {
-        let entry = entry?;
-        let path = entry.path();
-        let dest_path = dst.as_ref().join(entry.file_name());
+// fn copy_dir_all<P: AsRef<Path>, Q: AsRef<Path>>(src: P, dst: Q) -> std::io::Result<()> {
+//     fs::create_dir_all(&dst)?;
+//     for entry in fs::read_dir(src)? {
+//         let entry = entry?;
+//         let path = entry.path();
+//         let dest_path = dst.as_ref().join(entry.file_name());
 
-        if path.is_dir() {
-            copy_dir_all(&path, &dest_path)?;
-        } else {
-            fs::copy(&path, &dest_path)?;
-        }
-    }
-    Ok(())
-}
+//         if path.is_dir() {
+//             copy_dir_all(&path, &dest_path)?;
+//         } else {
+//             fs::copy(&path, &dest_path)?;
+//         }
+//     }
+//     Ok(())
+// }
 
 fn backup_via_package_manager() -> Result<()> {
     // Get the appropriate directory for storing our files
