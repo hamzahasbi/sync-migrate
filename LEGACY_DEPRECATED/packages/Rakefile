@@ -1,0 +1,24 @@
+desc 'Install a list of packages from a text file generated'
+task :install_packages do
+  raise 'Supply filename for list of packages, file=/path/to/packages.txt' unless ENV['file']
+  raise 'Supply package manager name to use either gem or npm or yarn' unless ENV['package_manager']
+  if ENV['package_manager'] == 'gem' then
+    File.open(ENV['file']).each do | line |
+      name = line.split(' ')[0]
+      versions = line.split('(')[1].chomp.delete(' )').split(',')
+    
+      versions.each do | version |
+        cmd = "sudo gem install #{name} --version=#{version}"
+        puts cmd
+        system cmd
+      end  
+    end  
+  else
+    File.open(ENV['file']).each do | line |
+      name = line.chomp  
+      cmd = "npm -g install #{name}"
+      puts cmd
+      system cmd
+    end 
+  end
+end
