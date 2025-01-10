@@ -11,6 +11,7 @@ use fs_extra::dir::CopyOptions;
 use directories::BaseDirs;
 mod mod_backup;
 use mod_backup::BackupConfig;
+
 fn check_ownership(path: &Path) -> bool {
   let metadata = match fs::metadata(path) {
       Ok(meta) => meta,
@@ -48,24 +49,10 @@ fn main() {
         let _ = BackupConfig::create_default_config(config_path.to_str().unwrap());
         BackupConfig::default_config()
     };
+    println!("Config: {:#?}", config_path);
     // Create the backup directory
     fs::create_dir_all(&backup_dir).expect("Failed to create backup directory");
     let  ignore = config.omit_folders;
-    // Define the files and directories to back up
-    // let files_to_backup = vec![
-    //     (format!("{}/.zshrc", env::var("HOME").unwrap()), ".zshrc"), // Use $HOME
-    //     (format!("{}/.config", env::var("HOME").unwrap()), ".config"), // Use $HOME
-    // ];
-
-    // // Copy each specified file/directory
-    // for (source, name) in files_to_backup {
-    //     let destination = Path::new(&backup_dir).join(name);
-    //     if Path::new(&source).is_dir() {
-    //         copy_dir_all(&source, &destination).expect("Failed to copy directory");
-    //     } else {
-    //         fs::copy(&source, &destination).expect("Failed to copy file");
-    //     }
-    // }
 
     let mut options = CopyOptions::new(); //Initialize default values for CopyOptions
     options.overwrite = true; // To mirror copy the whole structure of the source directory
@@ -124,22 +111,6 @@ fn create_file(base_dir: &Path, filename: &str) -> Result<fs::File> {
       .open(&file_path)
       .with_context(|| format!("Failed to create file: {:?}", file_path))
 }
-// Function to copy a directory recursively
-// fn copy_dir_all<P: AsRef<Path>, Q: AsRef<Path>>(src: P, dst: Q) -> std::io::Result<()> {
-//     fs::create_dir_all(&dst)?;
-//     for entry in fs::read_dir(src)? {
-//         let entry = entry?;
-//         let path = entry.path();
-//         let dest_path = dst.as_ref().join(entry.file_name());
-
-//         if path.is_dir() {
-//             copy_dir_all(&path, &dest_path)?;
-//         } else {
-//             fs::copy(&path, &dest_path)?;
-//         }
-//     }
-//     Ok(())
-// }
 
 fn backup_via_package_manager() -> Result<()> {
     // Get the appropriate directory for storing our files
@@ -166,9 +137,20 @@ fn backup_via_package_manager() -> Result<()> {
         .output()
         .context("Failed to execute npm command")?;
 
-    let mut node_file = create_file(&packages_dir, "node.txt")?;
-    node_file.write_all(&npm_output.stdout)
-        .context("Failed to write to node.txt")?;
+    let mut node_file: fs::File = create_file_mode(&packages_dir, "node.txt", 'w')?;
+    write!(node_file, "{}", String::from_utf8_lossy(&npm_output.stdout).into_owned()).context("Failed to write to node.txt")?;
+
+
+    // Execute the pnpm command and write output to node.txt
+    let pnpm_output = Command::new("pnpm")
+    .arg("list")
+    .arg("-g")
+    .arg("--depth=0")
+    .output()
+    .context("Failed to execute pnpm command")?;
+
+    let mut node_file: fs::File = create_file_mode(&packages_dir, "node.txt", 'a')?;
+    write!(node_file, "{}", String::from_utf8_lossy(&pnpm_output.stdout).into_owned()).context("Failed to write to node.txt")?;
 
     // Execute the yarn command and append output to node.txt
     let yarn_output = Command::new("yarn")
@@ -178,8 +160,8 @@ fn backup_via_package_manager() -> Result<()> {
         .output()
         .context("Failed to execute yarn command")?;
 
-    node_file.write_all(&yarn_output.stdout)
-        .context("Failed to append yarn output to node.txt")?;
+    let mut node_file: fs::File = create_file_mode(&packages_dir, "node.txt", 'a')?;
+    writeln!(node_file, "{}", String::from_utf8_lossy(&yarn_output.stdout).into_owned()).context("Failed to write to node.txt")?;
 
     // Execute the bun command and append output to node.txt
     let bun_output = Command::new("bun")
@@ -189,9 +171,8 @@ fn backup_via_package_manager() -> Result<()> {
         .output()
         .context("Failed to execute bun command")?;
 
-    let flattened_bun = flatten_bun_output(&bun_output.stdout);
-    node_file.write_all(flattened_bun.as_bytes())
-        .context("Failed to append bun output to node.txt")?;
+    let mut node_file: fs::File = create_file_mode(&packages_dir, "node.txt", 'a')?;
+    writeln!(node_file, "{}", String::from_utf8_lossy(&bun_output.stdout).into_owned()).context("Failed to write to node.txt")?;
 
     // Execute the brew command and write output to brew.txt
     let brew_output = Command::new("brew")
@@ -239,20 +220,17 @@ fn backup_via_package_manager() -> Result<()> {
     Ok(())
 }
 
-fn flatten_bun_output(output: &[u8]) -> String {
-  let output_str = String::from_utf8_lossy(output);
-  let mut flattened = String::new();
+fn create_file_mode(base_dir: &Path, filename: &str, mode: char) -> Result<fs::File> {
+  let file_path = base_dir.join(filename);
 
-  for line in output_str.lines() {
-      let trimmed = line.trim();
-      if !trimmed.is_empty() && !trimmed.starts_with("├") && !trimmed.starts_with("└") {
-          // Remove any version information (assuming it's in parentheses)
-          if let Some(package_name) = trimmed.split_whitespace().next() {
-              flattened.push_str(package_name);
-              flattened.push('\n');
-          }
-      }
+  let mut options = OpenOptions::new();
+  options.write(true);
+
+  if mode == 'a' {
+    options.append(true);
+  } else {
+    options.create(true).truncate(true);
   }
-
-  flattened
+  options.open(&file_path)
+  .with_context(|| format!("Failed to create file: {:?}", file_path))
 }

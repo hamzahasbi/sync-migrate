@@ -1,5 +1,5 @@
 use serde_derive::Deserialize;
-use std::fs;
+use std::{fs, path::Path};
 use anyhow::Result;
 
 #[derive(Deserialize)]
@@ -7,6 +7,7 @@ use anyhow::Result;
 pub struct BackupConfig {
     pub omit_folders: Vec<String>,
     pub backup_paths: Vec<String>,
+    pub packages_managers: Vec<String>,
 }
 
 impl BackupConfig {
@@ -53,12 +54,29 @@ impl BackupConfig {
             backup_paths: vec![
                 // "~/Documents".to_string(),
             ],
+            packages_managers: vec![
+                "composer".to_string(),
+                "npm".to_string(),
+                "yarn".to_string(),
+                "bun".to_string(),
+                "pnpm".to_string(),
+                "brew".to_string(),
+                "gem".to_string(),
+                "cargo".to_string(),
+                "pip".to_string(),
+          ],
         }
     }
 
     pub fn create_default_config(config_path: &str) -> Result<()> {
         let config = Self::default_config();
         let toml_string = toml::to_string_pretty(&config)?;
+        let parent = Path::new(config_path).parent().unwrap();
+        fs::create_dir_all(parent)?;
+        if fs::metadata(config_path).is_ok() {
+            println!("The file '{}' already exists. Aborting.", config_path);
+            return Err(anyhow::anyhow!("The file already exists"));
+        }
         fs::write(config_path, toml_string)?;
         Ok(())
     }
