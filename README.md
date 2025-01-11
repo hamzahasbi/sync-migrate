@@ -1,7 +1,7 @@
 
   
 
-# sync-migrate tool
+# DotPorter [sync-migrate renamed]
 
   
 
