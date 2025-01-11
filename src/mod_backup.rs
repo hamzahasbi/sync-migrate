@@ -8,6 +8,8 @@ pub struct BackupConfig {
     pub omit_folders: Vec<String>,
     pub backup_paths: Vec<String>,
     pub packages_managers: Vec<String>,
+    pub fnode_manager: String,
+    pub shell: String,
 }
 
 impl BackupConfig {
@@ -64,7 +66,10 @@ impl BackupConfig {
                 "gem".to_string(),
                 "cargo".to_string(),
                 "pip".to_string(),
-          ],
+                "pip3".to_string(),
+            ],
+            fnode_manager: "bun".to_string(),
+            shell: "zsh".to_string(),
         }
     }
 
