@@ -88,7 +88,7 @@ Required tools for the new machine:
 |:--|:--|
 | [🍺 Brew](https://brew.sh/) | Package Manager for macOS |
 | [💎 RubyGems](https://rubygems.org/) | Ruby Package Manager |
-| [📦 Package Managers](https://yarnpkg.com/) | Choose from: [Yarn](https://yarnpkg.com/), [NPM](https://www.npmjs.com/), [BUN](https://bun.sh/), [PNPM](https://pnpm.io/) |
+| [📦 Node Package Managers](https://yarnpkg.com/) | Choose from: [Yarn](https://yarnpkg.com/), [NPM](https://www.npmjs.com/), [BUN](https://bun.sh/), [PNPM](https://pnpm.io/) |
 | [🎼 Composer](https://getcomposer.org/) | PHP Package Manager |
 | [🐍 Pip](https://pypi.org/project/pip/) | Python Package Manager |
 | [🦀 Cargo](https://crates.io/) | Rust Package Manager |
