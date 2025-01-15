@@ -1,83 +1,114 @@
 
-  
+# DotPorter 🔄
 
-# DotPorter [sync-migrate renamed]
+[![Rust](https://img.shields.io/badge/Built%20with-Rust-orange)](https://www.rust-lang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-  
+> A powerful Rust-based tool for managing and synchronizing your dotfiles and packages across different machines.
 
-This repos will manage my future data sync from machine to machine including dot files and packages.
+## 📁 Tool Structure
 
-  
+| Folder | Description |
+|:--|:--|
+| 📂 **MANUAL_BACKUP** | Storage for manual backup files (legacy version) |
+| 📂 **LEGACY_DEPRECATED** | Archive of old scripts for reference |
+| 📂 **dotfiles** | Synchronized configuration files (auto-populated) |
+| 📂 **Packages** | Package management and backup files |
 
-## Tool Structure
+## 🚀 How does it work
 
-On the root of this project you have a folder containing some utility scripts that will be covered later on and some basic files (to copy paste if you need or just as a reminder to get yours backed up).
+### New Released Version (Rust-based)
 
-  
+1. Run the following command:
+```bash
+cargo run --bin Dotporter
+```
 
+This will automatically create a config file in your home directory:
+```
+~/dotporter/backup_config.toml
+```
 
-## How does it work
+<details>
+<summary>📸 Configuration Preview</summary>
 
-The files in the root directory serves as a reminder of the files to be backed up from your old laptop .
+![Config Preview](./screenshots/config.png "backup_config.toml")
+</details>
 
-  
+The configuration file can be customized to include or exclude:
+- Package managers
+- Folders
+- Specific files
 
-- **shell settings** => themes and plugins for my [ohmyzsh](https://ohmyz.sh/) configuration.
+After completion, two main folders will be created:
+- 📁 Dotfiles
+- 📁 Packages
 
-- **.zshrc** => Configuration file for [zsh](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH) if you are using zsh as a terminal.
+<details>
+<summary>📸 Result Structure</summary>
 
-- **personal-zsh-theme.zsh.theme** => This one is a customized (modified by me) zsh theme inspired from [daivasmara](https://github.com/Daivasmara/daivasmara.zsh-theme).
+![Dotfiles Structure](./screenshots/dotfiles.png "dotfiles")
+![Packages Structure](./screenshots/packages.png "packages")
+</details>
 
-- **settings.zip** => PHPStorm configuration .
+### Legacy Version
 
-  
+<details>
+<summary>Click to expand legacy version details</summary>
 
-#### *Scripts folder!*
+The root directory contains backup references for:
 
-Inside this folder you have a first script called backup-packages which (as its name indicates) will backup all your installed packages in one folder :
+- **🐚 Shell Settings**: Themes and plugins for [Oh My Zsh](https://ohmyz.sh/)
+- **📄 .zshrc**: [Zsh](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH) configuration
+- **🎨 personal-zsh-theme**: Custom theme inspired by [daivasmara](https://github.com/Daivasmara/daivasmara.zsh-theme)
+- **⚙️ settings.zip**: PHPStorm configuration
 
-  
+#### Scripts Usage
 
-> Included package managers are :
->  [brew](https://brew.sh/), [yarn](https://yarnpkg.com/), [npm](https://www.npmjs.com/), [gems](https://rubygems.org/), [composer](https://getcomposer.org/).
+1. Backup your packages:
+```bash
+chmod a+x ./scripts/backup-packages.sh
+./backup-packages.sh
+```
 
-  
+2. Restore on new machine:
+```bash
+chmod a+x ./scripts/packages/brew-bulk-install.sh
+chmod a+x ./scripts/packages/packages-reinstall.sh
+./brew-bulk-install.sh
+./packages-reinstall.sh
+```
+</details>
 
-	chmod a+x ./scripts/backup-packages.sh
+## 🛠 Dependencies
 
-	./backup-packages.sh
+Required tools for the new machine:
 
-After running the backup scripts you'll find several *.txt files in packages folder.
+| Tool | Purpose |
+|:--|:--|
+| [🍺 Brew](https://brew.sh/) | Package Manager for macOS |
+| [💎 RubyGems](https://rubygems.org/) | Ruby Package Manager |
+| [📦 Package Managers](https://yarnpkg.com/) | Choose from: [Yarn](https://yarnpkg.com/), [NPM](https://www.npmjs.com/), [BUN](https://bun.sh/), [PNPM](https://pnpm.io/) |
+| [🎼 Composer](https://getcomposer.org/) | PHP Package Manager |
+| [🐍 Pip](https://pypi.org/project/pip/) | Python Package Manager |
+| [🦀 Cargo](https://crates.io/) | Rust Package Manager |
+| [📜 Atuin](https://github.com/atuinsh/atuin) | Shell History Manager |
+| [🐚 ZSH](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH) | Shell (Optional) |
 
-Now you're done with your old machine and you can get started with the import on your new machine.
+## ⚠️ Important Notes
 
-To do that you'll need to run 2 scripts one to reinstall brew packages and the other one for npm/yarn & rubygems .
+- **Beta Feature**: Package installation binary is available but untested
+```bash
+cargo run --bin install
+```
+- **Composer Packages**: Consider manual `composer.json` copy and install
+- **Config Backup**: Current release focuses on configuration backup
 
-  
+## 🤝 Contributing
 
-	chmod a+x ./scripts/packages/brew-bulk-install.sh
-
-	chmod a+x ./scripts/packages/packages-reinstall.sh
-
-	./brew-bulk-install.sh
-
-	./packages-reinstall.sh
-
-
-## Dependencies  
-On the new machine you'll need the following tools to be installed.
-
-- [**Brew**](https://brew.sh/)
-- [**RubyGems**](https://rubygems.org/)
-- [**Yarn**](https://yarnpkg.com/) / [**NPM**](https://www.npmjs.com/)
-- [**Composer**](https://getcomposer.org/)
-- [**ZSH**](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH) (optional)
-
-
-## ALERT
-
-For composer packages a simpler solution would be to copy your composer.json in your home directory and directly do a composer install (much simpler i guess).
-
-## To contribute
-Feel free to submit issues or pull request or enhancement suggestions.
-[If you wanna have a chat](mailto:hamza.hasbi@gmail.com).
+Feel free to:
+- Submit issues
+- Create pull requests
+- Suggest enhancements
+- Made with ❤️ by [📧 hamzahasbi](mailto:hamza.hasbi@gmail.com)
+---
