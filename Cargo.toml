@@ -9,6 +9,10 @@ repository = "https://github.com/hamzahasbi/dotporter"
 keywords = ["dotfiles", "installer", "cli"]
 categories = ["command-line-utilities"]
 description = "A CLI tool to manage your dotfiles"
+exclude = [
+    "LEGACY_DEPRECATED/*",
+    "MANUAL_BACKUP/*",
+]
 # Define the library crate
 [lib]
 name = "dotporter"  # Name of the library crate
