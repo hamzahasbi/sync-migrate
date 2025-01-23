@@ -1,0 +1,6 @@
+rust_competitive_helper
+rust-competitive-helper
+yazi-cli
+ya
+yazi-fm
+yazi

@@ -1,14 +1,23 @@
 [package]
-name = "DotPorter"
+name = "dotporter"
 authors = ["Hamza <hamza.hasbi@gmail.com>"]
 version = "0.1.0"
 edition = "2021"
+license-file = "LICENSE"
+[lib]
+name = "dotporter"  # Name of the library crate
+path = "src/main.rs"  # Path to the library root
+
+# Define the binary crate
+[[bin]]
+name = "install"
+path = "src/bin/install.rs"
 
 [dependencies]
 chrono = "0.4.23"
 fs = "0.0.5"
 anyhow = "1.0"
-directories = "5.0"
+directories = "6.0.0"
 libc = "0.2"
 fs_extra = "1.3.0"
 serde = { version = "1.0", features = ["derive"] }

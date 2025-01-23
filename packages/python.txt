@@ -1,0 +1,7 @@
+certifi
+cffi
+cryptography
+gpg
+packaging
+pycparser
+six

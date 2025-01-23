@@ -9,7 +9,7 @@ use anyhow::{Context, Result};
 use fs_extra::dir::copy as copy_dir_all;
 use fs_extra::dir::CopyOptions;
 use directories::BaseDirs;
-mod mod_backup;
+pub mod mod_backup;
 use mod_backup::BackupConfig;
 use std::str;
 fn check_ownership(path: &Path) -> bool {

@@ -1,15 +1,13 @@
 // src/install.rs
 
-use std::env;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::process::Command;
 use std::process::exit;
 use directories::BaseDirs;
 use std::fs; // Import env module
-mod super::mod_backup;
-use mod_backup::BackupConfig; // Import BackupConfig
-
+// Import BackupConfig from the library crate
+use dotporter::mod_backup::BackupConfig;
 
 pub fn init() -> BackupConfig {
   let base_dirs = BaseDirs::new().expect("Failed to get base directories");
@@ -35,7 +33,7 @@ pub fn init() -> BackupConfig {
 pub fn install_packages() -> io::Result<()> {
   // Load the BackupConfig
   let backup_config = init();
-  let package_managers = backup_config.package_managers;
+  let package_managers = backup_config.packages_managers;
   let node_manager = backup_config.fnode_manager;
   let shell = backup_config.shell;
 
@@ -48,7 +46,8 @@ pub fn install_packages() -> io::Result<()> {
             let line = line?;
             let parts: Vec<&str> = line.split(' ').collect();
             let name = parts[0];
-            let versions: Vec<&str> = parts[1..].join(" ").split('(').nth(1).unwrap().trim_end_matches(')').split(',').collect();
+            let join = parts[1..].join(" ");
+            let versions: Vec<&str> = join.split('(').nth(1).unwrap().trim_end_matches(')').split(',').collect();
 
             for version in versions {
                 let cmd = format!("sudo gem install {} --version={}", name, version.trim());
@@ -100,7 +99,7 @@ pub fn install_packages() -> io::Result<()> {
                 .status()?;
         }
     } else {
-      let mut manager = String::new();
+      let mut manager: String = String::new();
         if package_manager == "npm" {
           manager = "npm -g install".to_string();
         } else if package_manager == "yarn" {
@@ -116,7 +115,7 @@ pub fn install_packages() -> io::Result<()> {
             let line = line?;
             let cmd = format!("{} {}", manager, line.trim());
             println!("{}", cmd);
-            Command::new(shell)
+            Command::new(&shell)
                 .arg("-c")
                 .arg(&cmd)
                 .status()?;
