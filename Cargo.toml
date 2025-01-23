@@ -4,6 +4,12 @@ authors = ["Hamza <hamza.hasbi@gmail.com>"]
 version = "0.1.0"
 edition = "2021"
 license-file = "LICENSE"
+readme = "README.md"
+repository = "https://github.com/hamzahasbi/dotporter"
+keywords = ["dotfiles", "installer", "cli"]
+categories = ["command-line-utilities"]
+description = "A CLI tool to manage your dotfiles"
+# Define the library crate
 [lib]
 name = "dotporter"  # Name of the library crate
 path = "src/main.rs"  # Path to the library root
